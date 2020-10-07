@@ -2,7 +2,7 @@ name: Sample Workflow
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   job1:
     runs-on: ubuntu-18.04
