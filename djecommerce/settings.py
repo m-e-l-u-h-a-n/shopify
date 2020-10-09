@@ -14,6 +14,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # auth (all auth package addition)
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    # auth (all auth package addition)
     'core'
 ]
 
@@ -52,7 +58,9 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+# used for referencing project level static files.
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]
+# upon running collectstatic command all the static files get collected here for description
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -75,3 +83,11 @@ if ENVIRONMENT == 'production':
     SECURE_REDIRECT_EXEMPT = []
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# auth (all auth package addition)
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+# auth (all auth package addition)
+SITE_ID = 1
