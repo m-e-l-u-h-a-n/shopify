@@ -3,7 +3,7 @@
 >
   <div class="container">
     <!-- Brand -->
-    <a class="navbar-brand waves-effect" href="#">
+    <a class="navbar-brand waves-effect" href="{% url 'home' %}">
       <strong class="blue-text">Shopify</strong>
     </a>
 
@@ -35,11 +35,13 @@
             >Checkout</a
           >
         </li>
+        {% comment 'product-link' %}
         <li class="nav-item">
-          <a class="nav-link waves-effect" href="{% url 'products' %}"
+          <a class="nav-link waves-effect" href="{% url 'product' %}"
             >Products</a
           >
         </li>
+        {% endcomment %}
       </ul>
 
       <!-- Right -->

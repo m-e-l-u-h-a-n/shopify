@@ -1,17 +1,19 @@
 from django.shortcuts import render
 from .models import Item
+from django.views.generic import ListView, DetailView
 # Create your views here.
 
 
-def item_list(req):
-    context = {
-        "items": Item.objects.all()
-    }
-    return render(req, "home-page.html", context=context)
+class HomeView(ListView):
+    """Home view is  used for listing of all the Items present for selling in the website."""
+    model = Item
+    template_name = "home-page.html"
 
 
-def products(req):
-    return render(req, "product-page.html", context={})
+class ItemDetailView(DetailView):
+    """A view to deal with the display details of a particular item in the cart."""
+    model = Item
+    template_name = 'product.html'
 
 
 def checkout(req):
