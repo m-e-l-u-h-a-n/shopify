@@ -20,7 +20,9 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     # auth (all auth package addition)
-    'core'
+    'core',
+    # crispy installed app
+    'crispy_forms'
 ]
 
 MIDDLEWARE = [
@@ -91,3 +93,10 @@ AUTHENTICATION_BACKENDS = [
 ]
 # auth (all auth package addition)
 SITE_ID = 1
+
+# CRISPY_FORMS SETTINGS
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# all_auth login redirection
+LOGIN_REDIRECT_URL = '/'

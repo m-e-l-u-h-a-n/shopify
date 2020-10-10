@@ -38,6 +38,7 @@ whitenoise = "==5.2.0"
 wrapt = "==1.12.1"
 python-decouple = "*"
 gunicorn = "*"
+django-crispy-forms = "*"
 
 [requires]
 python_version = "3.6"
