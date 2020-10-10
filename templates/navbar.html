@@ -1,3 +1,4 @@
+{% load cart_template_tags %}
 <nav
   class="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar"
 >
@@ -35,44 +36,43 @@
             >Checkout</a
           >
         </li>
-        {% comment 'product-link' %}
-        <li class="nav-item">
-          <a class="nav-link waves-effect" href="{% url 'product' %}"
-            >Products</a
-          >
-        </li>
-        {% endcomment %}
       </ul>
 
       <!-- Right -->
       <ul class="navbar-nav nav-flex-icons">
+        {% if request.user.is_authenticated %}
         <li class="nav-item">
           <a class="nav-link waves-effect">
-            <span class="badge red z-depth-1 mr-1"> 1 </span>
+            <span class="badge red z-depth-1 mr-1"> {{ request.user|cart_item_count }} </span>
             <i class="fas fa-shopping-cart"></i>
             <span class="clearfix d-none d-sm-inline-block"> Cart </span>
           </a>
         </li>
         <li class="nav-item">
-          {% comment 'shopify facebook pagelink' %} add shopify facebook page
-          link. {% endcomment %}
-          <a
-            href="https://www.facebook.com/mdbootstrap"
-            class="nav-link waves-effect"
-            target="_blank"
-          >
-            <i class="fab fa-facebook-f"></i>
+          <a class="nav-link waves-effect" href="{% url 'account_logout' %}">
+            <span class="clearfix d-none d-sm-inline-block"> Logout </span>
+          </a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link waves-effect" href="{% url 'account_login' %}">
+            <span class="clearfix d-none d-sm-inline-block"> Login </span>
           </a>
         </li>
         <li class="nav-item">
-          {% comment 'shopify github source-code' %} Add github repo link
-          {%endcomment %}
+          <a class="nav-link waves-effect" href="{% url 'account_signup' %}">
+            <span class="clearfix d-none d-sm-inline-block"> Signup </span>
+          </a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
           <a
-            href="https://github.com/mdbootstrap/bootstrap-material-design"
-            class="nav-link border border-light rounded waves-effect"
+            href="https://github.com/m-e-l-u-h-a-n/shopify"
+            class="nav-link waves-effect"
             target="_blank"
+            link="noreferer noreciever"
           >
-            <i class="fab fa-github mr-2"></i>Add source-code
+            <i class="fab fa-github mr-2"></i>
           </a>
         </li>
       </ul>
