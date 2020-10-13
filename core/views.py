@@ -1,8 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Item, Order, OrderItem
-from django.views.generic import ListView, DetailView
+from django.core.exceptions import ObjectDoesNotExist
+from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 
 
@@ -10,7 +13,7 @@ class HomeView(ListView):
     """Home view is  used for listing of all the Items present for selling in the website."""
     model = Item
     paginate_by = 10
-    template_name = "home-page.html"
+    template_name = "home.html"
 
 
 class ItemDetailView(DetailView):
@@ -19,10 +22,28 @@ class ItemDetailView(DetailView):
     template_name = 'product.html'
 
 
+class OrderSummaryView(LoginRequiredMixin, View):
+    """
+        Returns an order with all it's details.
+    """
+
+    def get(self, *args, **kwargs):
+        try:
+            order = Order.objects.get(user=self.request.user, is_ordered=False)
+            context = {
+                "order": order
+            }
+            return render(self.request, 'order-summary.html', context=context)
+        except ObjectDoesNotExist:
+            messages.error(self.request, "You don't have any actiive orders.")
+            return redirect('/')
+
+
 def checkout(req):
-    return render(req, "checkout-page.html", context={})
+    return render(req, "checkout.html", context={})
 
 
+@login_required
 def add_to_cart(req, slug):
     """
         Handles the logic of addition to the cart.
@@ -38,20 +59,57 @@ def add_to_cart(req, slug):
         if order.items.filter(item__slug=item.slug).exists():
             order_item.quantity += 1
             order_item.save()
-            messages.success(req, "Item suuccessfully added to the cart.")
+            messages.success(req, "Item successfully added to the cart.")
         else:
-            messages.success(req, "Item suuccessfully added to the cart.")
+            messages.success(req, "Item successfully added to the cart.")
+            order_item.quantity = 1
+            order_item.save()
             order.items.add(order_item)
     else:
         ordered_date = timezone.now()
         order = Order.objects.create(
             user=req.user, ordered_date=ordered_date)
+        order_item.quantity = 1
+        order_item.save()
         order.items.add(order_item)
-        messages.success(req, "Item suuccessfully added to the cart.")
-    return redirect("product", slug=slug)
+        messages.success(req, "Item successfully added to the cart.")
+    return redirect("order-summary")
 
 
+@login_required
 def remove_from_cart(req, slug):
+    """
+        Handles the logic of removal from the cart.
+        `It completly removes the item from the cart.`
+        If an order of the user is already pending then remove the selected item from that order if it is in the order.
+    """
+    item = get_object_or_404(Item, slug=slug)
+    order_queryset = Order.objects.filter(user=req.user, is_ordered=False)
+    if order_queryset.exists():
+        order = order_queryset[0]
+        # if item already exists in the order.
+        if order.items.filter(item__slug=item.slug).exists():
+            order_item = OrderItem.objects.filter(
+                item=item, user=req.user, is_ordered=False)[0]
+            order_item.quantity = 0
+            order_item.save()
+            order.items.remove(order_item)
+            order.save()
+            messages.success(req, "Item successfully removed from the cart.")
+            return redirect("order-summary")
+        else:
+            # add a message the no such item exists in the order.
+            messages.info(req, "This item is not is the cart.")
+            return redirect("product", slug=slug)
+    else:
+        # add a message saying user does not have a order.
+        messages.info(req, "You don't have any active orders.")
+        print("User currently has no orders.")
+        return redirect("product", slug=slug)
+
+
+@login_required
+def remove_single_from_cart(req, slug):
     """
         Handles the logic of removal from the cart.
         If an order of the user is already pending then remove the selected item from that order if it is in the order.
@@ -64,16 +122,23 @@ def remove_from_cart(req, slug):
         if order.items.filter(item__slug=item.slug).exists():
             order_item = OrderItem.objects.filter(
                 item=item, user=req.user, is_ordered=False)[0]
-            order.items.remove(order_item)
-            order.save()
-            messages.success(req, "Item successfully removed from the cart.")
+            if order_item.quantity > 1:
+                order_item.quantity -= 1
+                messages.success(req, "Quantity updated successfully.")
+                order_item.save()
+            else:
+                order.items.remove(order_item)
+                order.save()
+                print("Item removed form the cart")
+                messages.success(req, "Item removed from the cart.")
+            return redirect('order-summary')
         else:
             # add a message the no such item exists in the order.
             messages.info(req, "This item is not is the cart.")
-            return redirect("product", slug=slug)
+            print("This item is not is the cart.")
+            return redirect("order-summary")
     else:
         # add a message saying user does not have a order.
         messages.info(req, "You don't have any active orders.")
         print("User currently has no orders.")
-        return redirect("product", slug=slug)
-    return redirect("product", slug=slug)
+        return redirect("order-summary")
