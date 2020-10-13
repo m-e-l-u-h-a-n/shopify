@@ -1,18 +1,23 @@
 {% extends 'base.html' %} 
+{% load crispy_forms_tags %}
 {% block head_title %}
 checkout
 {% endblock head_title %}
 {% block content %}
 <div class="grey lighten-3" style="margin: 0px; padding: 0px;">
   <!-- Navbar -->
-  {% include 'navbar.html' %}
+  <div class="row mb-5">
+    <div class="col-12">{% include 'navbar.html' %}</div>
+  </div>
   <!-- Navbar -->
-
+  <div class="mb-5">
+    {% include 'messages.html' %}
+  </div>
   <!--Main layout-->
   <main class="mt-5 pt-4">
     <div class="container wow fadeIn">
       <!-- Heading -->
-      <h2 class="my-5 h2 text-center">Checkout form</h2>
+      <h2 class="my-5 h1 text-center"><u>Checkout form</u></h2>
 
       <!--Grid row-->
       <div class="row">
@@ -21,120 +26,46 @@ checkout
           <!--Card-->
           <div class="card">
             <!--Card content-->
-            <form class="card-body">
-              <!--Grid row-->
-              <div class="row">
-                <!--Grid column-->
-                <div class="col-md-6 mb-2">
-                  <!--firstName-->
-                  <div class="md-form">
-                    <input type="text" id="firstName" class="form-control" />
-                    <label for="firstName" class="">First name</label>
-                  </div>
-                </div>
-                <!--Grid column-->
-
-                <!--Grid column-->
-                <div class="col-md-6 mb-2">
-                  <!--lastName-->
-                  <div class="md-form">
-                    <input type="text" id="lastName" class="form-control" />
-                    <label for="lastName" class="">Last name</label>
-                  </div>
-                </div>
-                <!--Grid column-->
-              </div>
-              <!--Grid row-->
-
-              <!--Username-->
-              <div class="md-form input-group pl-0 mb-5">
-                <div class="input-group-prepend">
-                  <span class="input-group-text" id="basic-addon1">@</span>
-                </div>
-                <input
-                  type="text"
-                  class="form-control py-0"
-                  placeholder="Username"
-                  aria-describedby="basic-addon1"
-                />
-              </div>
-
-              <!--email-->
-              <div class="md-form mb-5">
-                <input
-                  type="text"
-                  id="email"
-                  class="form-control"
-                  placeholder="youremail@example.com"
-                />
-                <label for="email" class="">Email (optional)</label>
-              </div>
-
+            <form class="card-body" method="POST" action="{% url 'checkout' %}">
+              {% csrf_token %}
               <!--address-->
               <div class="md-form mb-5">
                 <input
                   type="text"
-                  id="address"
+                  name="street_address"
+                  required
+                  id="id_street_address"
                   class="form-control"
                   placeholder="1234 Main St"
                 />
-                <label for="address" class="">Address</label>
+                <label for="id_street_address" class="">Street address<span class="asteriskField">*</span></label>
               </div>
 
               <!--address-2-->
               <div class="md-form mb-5">
                 <input
                   type="text"
-                  id="address-2"
+                  name="apartment_address"
+                  id="id_apartment_address"
                   class="form-control"
                   placeholder="Apartment or suite"
                 />
-                <label for="address-2" class="">Address 2 (optional)</label>
+                <label for="id_apartment_address" class="">Apartment address (optional)</label>
               </div>
 
               <!--Grid row-->
               <div class="row">
-                <!--Grid column-->
-                <div class="col-lg-4 col-md-12 mb-4">
-                  <label for="country">Country</label>
-                  <select
-                    class="custom-select d-block w-100"
-                    id="country"
-                    required
-                  >
-                    <option value="">Choose...</option>
-                    <option>United States</option>
-                  </select>
-                  <div class="invalid-feedback">
-                    Please select a valid country.
-                  </div>
+                <div class="col-lg-6 col-md-6 mb-4">
+                {% include 'country-select.html' %}
                 </div>
                 <!--Grid column-->
-
-                <!--Grid column-->
-                <div class="col-lg-4 col-md-6 mb-4">
-                  <label for="state">State</label>
-                  <select
-                    class="custom-select d-block w-100"
-                    id="state"
-                    required
-                  >
-                    <option value="">Choose...</option>
-                    <option>California</option>
-                  </select>
-                  <div class="invalid-feedback">
-                    Please provide a valid state.
-                  </div>
-                </div>
-                <!--Grid column-->
-
-                <!--Grid column-->
-                <div class="col-lg-4 col-md-6 mb-4">
-                  <label for="zip">Zip</label>
+                <div class="col-lg-6 col-md-6 mb-4">
+                  <label for="id_zip">Zip<span class="asteriskField">*</span></label>
                   <input
                     type="text"
+                    name="zip"
                     class="form-control"
-                    id="zip"
+                    id="id_zip"
                     placeholder=""
                     required
                   />
@@ -149,116 +80,58 @@ checkout
               <div class="custom-control custom-checkbox">
                 <input
                   type="checkbox"
+                  name="same_shipping_address"
                   class="custom-control-input"
-                  id="same-address"
+                  id="id_same_shipping_address"
                 />
-                <label class="custom-control-label" for="same-address"
-                  >Shipping address is the same as my billing address</label
+                <label class="custom-control-label" for="id_same_shipping_address"
+                  >Same shipping address</label
                 >
               </div>
               <div class="custom-control custom-checkbox">
                 <input
                   type="checkbox"
+                  name="save_info"
                   class="custom-control-input"
-                  id="save-info"
+                  id="id_save_info"
                 />
-                <label class="custom-control-label" for="save-info"
-                  >Save this information for next time</label
+                <label class="custom-control-label" for="id_save_info"
+                  >Save info</label
                 >
               </div>
 
               <hr />
 
               <div class="d-block my-3">
+                <label for="id_payment_options_0" class="requiredField">
+                  Payment options<span class="asteriskField">*</span>
+                </label>
                 <div class="custom-control custom-radio">
                   <input
-                    id="credit"
-                    name="paymentMethod"
+                    id="id_payment_options_1"
+                    name="payment_options"
                     type="radio"
                     class="custom-control-input"
                     checked
+                    value="S"
                     required
                   />
-                  <label class="custom-control-label" for="credit"
-                    >Credit card</label
+                  <label class="custom-control-label" for="id_payment_options_1"
+                    >Stripe</label
                   >
                 </div>
                 <div class="custom-control custom-radio">
                   <input
-                    id="debit"
-                    name="paymentMethod"
+                    id="id_payment_options_2"
+                    name="payment_options"
                     type="radio"
                     class="custom-control-input"
+                    value="P"
                     required
                   />
-                  <label class="custom-control-label" for="debit"
-                    >Debit card</label
-                  >
-                </div>
-                <div class="custom-control custom-radio">
-                  <input
-                    id="paypal"
-                    name="paymentMethod"
-                    type="radio"
-                    class="custom-control-input"
-                    required
-                  />
-                  <label class="custom-control-label" for="paypal"
+                  <label class="custom-control-label" for="id_payment_options_2"
                     >Paypal</label
                   >
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="cc-name">Name on card</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="cc-name"
-                    placeholder=""
-                    required
-                  />
-                  <small class="text-muted"
-                    >Full name as displayed on card</small
-                  >
-                  <div class="invalid-feedback">Name on card is required</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label for="cc-number">Credit card number</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="cc-number"
-                    placeholder=""
-                    required
-                  />
-                  <div class="invalid-feedback">
-                    Credit card number is required
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-3 mb-3">
-                  <label for="cc-expiration">Expiration</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="cc-expiration"
-                    placeholder=""
-                    required
-                  />
-                  <div class="invalid-feedback">Expiration date required</div>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <label for="cc-expiration">CVV</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="cc-cvv"
-                    placeholder=""
-                    required
-                  />
-                  <div class="invalid-feedback">Security code required</div>
                 </div>
               </div>
               <hr class="mb-4" />

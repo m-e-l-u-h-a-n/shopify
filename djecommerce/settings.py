@@ -4,7 +4,7 @@ ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 
 DEBUG = True
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SECRET_KEY = '-05sgp9!deq=q1nltm@^^2cc+v29i(tyybv3v2t77qi66czazj'
+SECRET_KEY = os.getenv('SECRET_KEY')
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
@@ -22,7 +22,9 @@ INSTALLED_APPS = [
     # auth (all auth package addition)
     'core',
     # crispy installed app
-    'crispy_forms'
+    'crispy_forms',
+    # django-countries package installed app
+    'django_countries'
 ]
 
 MIDDLEWARE = [
