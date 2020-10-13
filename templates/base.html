@@ -13,9 +13,9 @@
   <body>
     {% block body_initial %}
     {% endblock body_initial %}
-    <div class="wrapper">
-    {% block content %} {% endblock content %}
-    </div> {% block body %}{%endblock body%}
+    {% block content %}
+    {% endblock content %}
+    {% block body %}{%endblock body%}
     {% include 'bottom-scripts.html' %}
     {% include 'footer.html' %}
     {%block extra_body%} {% endblock extra_body %}
