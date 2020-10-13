@@ -39,6 +39,7 @@ wrapt = "==1.12.1"
 python-decouple = "*"
 gunicorn = "*"
 django-crispy-forms = "*"
+django-countries = "*"
 
 [requires]
 python_version = "3.6"
