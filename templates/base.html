@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Shoipfy | {% block head_title %}{% endblock %}</title>
-    {% block extra_head %} {% endblock %} {% include 'head-css.html' %}
+    {% block extra_head %} {% endblock extra_head %} {% include 'head-css.html' %}
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
     {% include 'head-css.html' %}
   </head>
@@ -19,5 +19,7 @@
     {% include 'bottom-scripts.html' %}
     {% include 'footer.html' %}
     {%block extra_body%} {% endblock extra_body %}
+    {% block extra_scripts %}
+    {% endblock extra_scripts %}
   </body>
 </html>
