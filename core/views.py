@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Item, Order, OrderItem
+from .models import Item, Order, OrderItem, BillingAddress, Payment
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
@@ -7,8 +7,11 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import CheckoutForm
-from .models import BillingAddress
+from django.conf import settings
 # Create your views here.
+
+import stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class HomeView(ListView):
@@ -53,6 +56,7 @@ class CheckoutView(View):
         form = CheckoutForm(self.request.POST or None)
         try:
             order = Order.objects.get(user=self.request.user, is_ordered=False)
+            # TODO: this form needs proper validations about empty addressesand all.
             if form.is_valid():
                 street_address = form.cleaned_data.get('street_address')
                 apartment_address = form.cleaned_data.get('apartment_address')
@@ -70,17 +74,103 @@ class CheckoutView(View):
                     country=country,
                     zip=zip
                 )
-                # TODO: add redirect to the selected payment options.
                 billing_address.save()
                 order.billing_address = billing_address
                 order.save()
+
+                if payment_options == 'S':
+                    return redirect('payment', payment_options="stripe")
+                elif payment_options == 'P':
+                    return redirect('payment', payment_options="paypal")
+                else:
+                    messages.warning(
+                        self.request, "Failed checkout(invalid payment option)!")
+                    return redirect(checkout)
                 messages.success("Successfully placed the order.")
                 return redirect('checkout')
-            messages.warning(self.request, "Failed Checkout")
+            else:
+                print(form.errors)
+                messages.warning(self.request, "Failed Checkout")
         except ObjectDoesNotExist:
-            messages.error(self.request, "You don't have any actiive orders.")
+            messages.error(self.request, "You don't have any active orders.")
             return redirect('checkout')
         return redirect('checkout')
+
+
+class PaymentView(View):
+    def get(self, *args, **kwargs):
+        try:
+            order = Order.objects.get(user=self.request.user, is_ordered=False)
+        except ObjectDoesNotExist:
+            messages.error(self.request, "You don't have any active orders.")
+            return redirect('home')
+        context = {
+            'order': order
+        }
+        return render(self.request, "payment.html", context=context)
+
+    def post(self, *args, **kwargs):
+        order = Order.objects.get(user=self.request.user, is_ordered=False)
+        token = self.request.POST.get('stripeToken')
+        print('token = ', token)
+        amount = int(order.get_total())
+        # TODO: check if the order is not null.
+        try:
+            charge = stripe.Charge.create(
+                amount=amount,  # in dollars
+                currency="usd",
+                # TODO: check why token is not coming in self.request.POST.get('stripeToken')
+                source="tok_in",
+                description="My First Test Charge (created for API docs)",
+            )
+            payment = Payment()
+            payment.stripe_charge_id = charge.id
+            payment.user = self.request.user
+            payment.amount = order.get_total()
+            payment.save()
+            order.is_ordered = True
+            order.save()
+            messages.success(self.request, "Order successfully placed!")
+            return redirect('checkout')
+        except stripe.error.CardError as e:
+            # Since it's a decline, stripe.error.CardError will be caught
+            print(e)
+            messages.error(self.request, f'${e.error.message}')
+            return redirect('checkout')
+        except stripe.error.RateLimitError as e:
+            # Too many requests made to the API too quickly
+            print(e)
+            messages.error(self.request, "Request limit error.")
+            return redirect('checkout')
+        except stripe.error.InvalidRequestError as e:
+            # Invalid parameters were supplied to Stripe's API
+            print(e)
+            messages.error(self.request, "Invalid parameters")
+            return redirect('checkout')
+        except stripe.error.AuthenticationError as e:
+            # Authentication with Stripe's API failed
+            # (maybe you changed API keys recently)
+            print(e)
+            messages.error(self.request, "Not authentiacted")
+            return redirect('checkout')
+        except stripe.error.APIConnectionError as e:
+            # Network communication with Stripe failed
+            print(e)
+            messages.error(self.request, "Network error")
+            return redirect('checkout')
+        except stripe.error.StripeError as e:
+            # Display a very generic error to the user, and maybe send
+            # yourself an email
+            print(e)
+            messages.error(
+                self.request, "Something went wrong, no amount deducted.")
+            return redirect('checkout')
+        except Exception as e:
+            # Send an email to yourselves
+            print(e)
+            messages.error(
+                self.request, "Unexpected error, will be fixed soon.")
+            return redirect('checkout')
 
 
 @login_required

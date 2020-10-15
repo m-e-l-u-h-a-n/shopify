@@ -27,6 +27,7 @@ class Item(models.Model):
     label = models.CharField(choices=LABEL_CHOICES, max_length=2)
     slug = models.SlugField()
     description = models.TextField(default="No description provided")
+    image = models.ImageField(blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -78,7 +79,15 @@ class BillingAddress(models.Model):
     zip = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.user.username
+        return f'{self.user.username}\'s {self.apartment_address}'
+
+
+class Payment(models.Model):
+    stripe_charge_id = models.CharField(max_length=50)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.SET_NULL, blank=True, null=True)
+    amount = models.FloatField()
+    timestamp = models.DateTimeField(auto_now_add=True)
 
 
 class Order(models.Model):
@@ -91,6 +100,8 @@ class Order(models.Model):
     is_ordered = models.BooleanField(default=False)
     billing_address = models.ForeignKey(
         BillingAddress, on_delete=models.CASCADE, null=True, blank=True)
+    payment = models.ForeignKey(Payment,
+                                on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return self.user.username

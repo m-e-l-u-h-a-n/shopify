@@ -40,6 +40,7 @@ python-decouple = "*"
 gunicorn = "*"
 django-crispy-forms = "*"
 django-countries = "*"
+stripe = "*"
 
 [requires]
 python_version = "3.6"
