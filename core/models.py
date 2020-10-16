@@ -102,6 +102,8 @@ class Order(models.Model):
         BillingAddress, on_delete=models.CASCADE, null=True, blank=True)
     payment = models.ForeignKey(Payment,
                                 on_delete=models.SET_NULL, blank=True, null=True)
+    coupon = models.ForeignKey(
+        'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
@@ -111,3 +113,18 @@ class Order(models.Model):
         for order_item in self.items.all():
             total += order_item.get_final_price()
         return total
+
+    def get_coupon_discount(self):
+        return ((self.get_total()) * (self.coupon.percentage)) / 100
+
+    def get_total_after_coupon(self):
+        return self.get_total() - self.get_coupon_discount()
+
+
+class Coupon(models.Model):
+    """A model handling referral codes and coupons for an order."""
+    code = models.CharField(max_length=15)
+    percentage = models.FloatField(default=0)
+
+    def __str__(self):
+        return self.code

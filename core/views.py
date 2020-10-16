@@ -1,12 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Item, Order, OrderItem, BillingAddress, Payment
+from .models import Item, Order, OrderItem, BillingAddress, Payment, Coupon
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import CheckoutForm
+from .forms import CheckoutForm, CouponForm
 from django.conf import settings
 # Create your views here.
 
@@ -47,8 +47,16 @@ class OrderSummaryView(LoginRequiredMixin, View):
 class CheckoutView(View):
     def get(self, *args, **kwargs):
         form = CheckoutForm()
+        try:
+            order = Order.objects.get(user=self.request.user, is_ordered=False)
+        except ObjectDoesNotExist:
+            messages.error(self.request, "You don't have any active orders.")
+            return redirect('home')
         context = {
-            "form": form
+            "form": form,
+            'order': order,
+            "coupon_form": CouponForm(),
+            'show_coupon_form': True
         }
         return render(self.request, "checkout.html", context=context)
 
@@ -105,7 +113,9 @@ class PaymentView(View):
             messages.error(self.request, "You don't have any active orders.")
             return redirect('home')
         context = {
-            'order': order
+            'order': order,
+            'coupon_form': CouponForm(),
+            'show_coupon_form': False
         }
         return render(self.request, "payment.html", context=context)
 
@@ -128,6 +138,10 @@ class PaymentView(View):
             payment.user = self.request.user
             payment.amount = order.get_total()
             payment.save()
+            order_items = order.items.all()
+            order_items.update(is_ordered=True)
+            for order_item in order_items:
+                order_item.save()
             order.is_ordered = True
             order.save()
             messages.success(self.request, "Order successfully placed!")
@@ -272,3 +286,38 @@ def remove_single_from_cart(req, slug):
         messages.info(req, "You don't have any active orders.")
         print("User currently has no orders.")
         return redirect("order-summary")
+
+
+def get_coupon(request, code):
+    print('code = ', code)
+    try:
+        coupon = Coupon.objects.get(code=code)
+        return coupon
+    except ObjectDoesNotExist:
+        messages.warning(request, "Invalid Coupon code!")
+        return redirect('checkout')
+
+
+class AddCouponView(LoginRequiredMixin, View):
+    def post(self, *args, **kwargs):
+        form = CouponForm(request.POST)
+        print("validated the form, line = 301")
+        if form.is_valid():
+            try:
+                order = Order.objects.get(
+                    user=self.request.user, is_ordered=False)
+                code = form.cleaned_data.get('code')
+                order.coupon = get_coupon(self.request, code)
+                order.save()
+                # TODO:: Add validations and limit number of time usage of the coupon.
+                messages.success(self.request, "Coupon applied succesfully.")
+                return redirect('checkout')
+            except ObjectDoesNotExist:
+                messages.info(
+                    self.request, "You do not have any active order.")
+                return redirect('checkout')
+            messages.info(self.request, "You do not have any active order.")
+            return redirect('checkout')
+        else:
+            messages.warning(self.request, "Invalid Coupon Code!")
+            return redirect('checkout')

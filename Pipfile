@@ -41,6 +41,7 @@ gunicorn = "*"
 django-crispy-forms = "*"
 django-countries = "*"
 stripe = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.6"

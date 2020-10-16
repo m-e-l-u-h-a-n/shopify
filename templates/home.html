@@ -91,11 +91,17 @@
               <!--Card-->
               <div class="card">
                 <!--Card image-->
-                <div class="view overlay">
+                {% comment %}
                   <img
                     src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/13.jpg"
                     class="card-img-top"
                     alt=""
+                  /> {% endcomment %}
+                  <div class="view overlay">
+                  <img
+                    src="{{item.image.url}}"
+                    class="card-img-top"
+                    alt="Item's image"
                   />
                   <a href="{{item.get_absolute_url}}">
                     <div class="mask rgba-white-slight"></div>
