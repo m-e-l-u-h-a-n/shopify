@@ -94,6 +94,7 @@ class Order(models.Model):
     """An Order that can be placed on the website"""
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
+    ref_code = models.CharField(max_length=20)
     items = models.ManyToManyField(OrderItem)
     start_date = models.DateTimeField(auto_now_add=True)
     ordered_date = models.DateTimeField()
@@ -104,6 +105,20 @@ class Order(models.Model):
                                 on_delete=models.SET_NULL, blank=True, null=True)
     coupon = models.ForeignKey(
         'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
+    being_delivered = models.BooleanField(default=False)
+    recieved = models.BooleanField(default=False)
+    refund_requested = models.BooleanField(default=False)
+    refund_granted = models.BooleanField(default=False)
+    """
+        1. Item added to the cart
+        2. Adding a billing address
+        (Failed Checkout)
+        3. Payment
+        preprocessing, processing, packaging, etc..
+        4. Being delivered
+        5. Recieved
+        6. Refunds
+    """
 
     def __str__(self):
         return self.user.username
@@ -115,7 +130,10 @@ class Order(models.Model):
         return total
 
     def get_coupon_discount(self):
-        return ((self.get_total()) * (self.coupon.percentage)) / 100
+        if self.coupon:
+            return ((self.get_total()) * (self.coupon.percentage)) / 100
+        else:
+            return 0
 
     def get_total_after_coupon(self):
         return self.get_total() - self.get_coupon_discount()
@@ -128,3 +146,13 @@ class Coupon(models.Model):
 
     def __str__(self):
         return self.code
+
+
+class Refund(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    reason = models.TextField()
+    accepted = models.BooleanField(default=False)
+    eamil = models.EmailField(max_length=254)
+
+    def __str__(self):
+        return f'{self.pk}'

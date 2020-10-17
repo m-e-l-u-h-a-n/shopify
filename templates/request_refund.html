@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block head_title %}
+Request refund
+{% endblock head_title %}
+{% block content %}
+<main>
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-12">{% include 'navbar.html' %}</div>
+    </div>
+    <div class="mb-5">
+    {% include 'messages.html' %}
+    </div>
+    <div class="row mt-5">
+      <div class="col-12 mt-5">
+        <div class="table-responsive text-nowrap">
+          <h2>Refund Request</h2>
+          <hr class="my-2 stylish-color" />
+          <div class="card z-depth-0">
+            <form action="." method="POST" class="card-body">
+              {% csrf_token %}
+              {{form|crispy}}
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock content %}
