@@ -1,20 +1,14 @@
-# Django Project Boilerplate
+# Shopify
 
-This repository is a boilerplate Django project for quickly getting started.
-
-[![alt text](https://github.com/justdjango/django_project_boilerplate/blob/master/thumbnail.png "Logo")](https://www.youtube.com/watch?v=GEogao-tUec)
+This repository holds the source code for project **Shopify** for the CSE-205N course at IIT(BHU).
 
 ## Getting started
 
-Steps:
+Development:
 
-1. Clone/pull/download this repository
-2. Create a virtualenv with `virtualenv env` and install dependencies with `pip install -r requirements.txt`
-3. Configure your .env variables
-4. Rename your project with `python manage.py rename <yourprojectname> <newprojectname>`
-
-This project includes:
-
-1. Settings modules for deploying with Azure
-2. Django commands for renaming your project and creating a superuser
-3. A cli tool for setting environment variables for deployment
+1. Fork the repo and clone it to your system.
+2. Configure your .env variables
+3. Move to project directory in your terminal and run `pipenv shell` to start the project's virtual environment.(If pipenv is not installed run `pip install pipenv` and then use `pipenv shell`). It will also load environment variables required for the project.
+4. Run `pipenv install` to download the project's dependencies.
+5. Now start the development server using `python manage.py runserver`.
+6. In case there is an error regarding settings moule not configured on above steps run `DJANGO_SETTINGS_MODULE=djecommerce.settings`
