@@ -66,6 +66,10 @@ class CheckoutView(View):
         except ObjectDoesNotExist:
             messages.error(self.request, "You don't have any active orders.")
             return redirect('home')
+        except TypeError:
+            messages.info(
+                self.request, "You need to login to access the page.")
+            return redirect('account_login')
         context = {
             "form": form,
             'order': order,
@@ -111,7 +115,7 @@ class CheckoutView(View):
                         order.shipping_address = shipping_address
                         order.save()
                     else:
-                        messages.info(
+                        messages.error(
                             self.request, "No default shipping address available")
                         return redirect('checkout')
                 else:
@@ -123,7 +127,8 @@ class CheckoutView(View):
                     shipping_country = form.cleaned_data.get(
                         'shipping_country')
                     shipping_zip = form.cleaned_data.get('shipping_zip')
-                    if valid_form([shipping_address1, shipping_address1, shipping_country, shipping_zip]):
+                    print()
+                    if valid_form([shipping_address1, shipping_country, shipping_zip]):
                         shipping_address = Address(
                             user=self.request.user,
                             street_address=shipping_address1,
@@ -136,8 +141,9 @@ class CheckoutView(View):
                         order.shipping_address = shipping_address
                         order.save()
                     else:
-                        messages.info(
-                            self.request, "Please fill in required shipping address fields")
+                        messages.error(
+                            self.request, "Shipping address field is required")
+                        return redirect('checkout')
 
                     set_default_shipping = form.cleaned_data.get(
                         'set_default_shipping')
@@ -167,7 +173,7 @@ class CheckoutView(View):
                         order.billing_address = billing_address
                         order.save()
                     else:
-                        messages.info(
+                        messages.error(
                             self.request, "No default billing address available")
                         return redirect('checkout')
                 else:
@@ -179,7 +185,7 @@ class CheckoutView(View):
                     billing_country = form.cleaned_data.get(
                         'billing_country')
                     billing_zip = form.cleaned_data.get('billing_zip')
-                    if valid_form([billing_address1, billing_address1, billing_country, billing_zip]):
+                    if valid_form([billing_address1, billing_country, billing_zip]):
                         billing_address = Address(
                             user=self.request.user,
                             street_address=billing_address1,
@@ -191,15 +197,15 @@ class CheckoutView(View):
                         billing_address.save()
                         order.billing_address = billing_address
                         order.save()
-
+                    else:
+                        messages.error(
+                            self.request, "Billing address field is required!")
+                        return redirect('checkout')
                     set_default_billing = form.cleaned_data.get(
                         'set_default_billing')
                     if set_default_billing:
                         billing_address.default = True
                         billing_address.save()
-                    else:
-                        messages.info(
-                            self.request, "Please fill in required billing address fields")
 
                 payment_options = form.cleaned_data.get('payment_options')
                 if payment_options == 'S':
@@ -221,7 +227,7 @@ class CheckoutView(View):
         return redirect('checkout')
 
 
-class PaymentView(View):
+class PaymentView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
         try:
             order = Order.objects.get(user=self.request.user, is_ordered=False)
