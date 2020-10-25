@@ -11,4 +11,4 @@ Development:
 3. Move to project directory in your terminal and run `pipenv shell` to start the project's virtual environment.(If pipenv is not installed run `pip install pipenv` and then use `pipenv shell`). It will also load environment variables required for the project.
 4. Run `pipenv install` to download the project's dependencies.
 5. Now start the development server using `python manage.py runserver`.
-6. In case there is an error regarding settings moule not configured on above steps run `DJANGO_SETTINGS_MODULE=djecommerce.settings`
+6. In case there is an error regarding settings moule not configured on above steps run `export DJANGO_SETTINGS_MODULE=djecommerce.settings` on your terminal.

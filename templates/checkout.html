@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
 {% block head_title %}
 checkout
@@ -6,11 +7,7 @@ checkout
 {% block content %}
 <div class="grey lighten-3" style="margin: 0px; padding: 0px">
   <!-- Navbar -->
-  <div class="row mb-5">
-    <div class="col-12">{% include 'navbar.html' %}</div>
-  </div>
-  <!-- Navbar -->
-  <div>{% include 'messages.html' %}</div>
+  <div class="col-12">{% include 'navbar.html' %}</div>
   <!--Main layout-->
   <main class="mt-5 pt-4">
     <div class="container wow fadeIn">
@@ -24,7 +21,7 @@ checkout
           <!--Card-->
           <div class="card">
             <!--Card content-->
-            <form class="card-body" method="POST" action="{% url 'checkout' %}">
+            <form class="card-body" method="POST" action="{% url 'checkout' %}" id="checkout-form">
               <h3>Shipping Address</h3>
               {% csrf_token %}
               <!--address-->
@@ -46,7 +43,7 @@ checkout
                 <div class="md-form mb-5">
                   <input
                     type="text"
-                    name="shipping_address"
+                    name="shipping_address2"
                     id="id_shipping_address"
                     class="form-control"
                     placeholder="Apartment or suite"
@@ -149,7 +146,7 @@ checkout
                 <div class="md-form mb-5">
                   <input
                     type="text"
-                    name="billing_address"
+                    name="billing_address2"
                     id="id_billing_address"
                     class="form-control"
                     placeholder="Apartment or suite"
@@ -249,9 +246,9 @@ checkout
                 </div>
               </div>
               <hr class="mb-4" />
-              <button class="btn btn-primary btn-lg btn-block" type="submit">
+              <a role="button" class="btn btn-primary btn-lg btn-block" onclick="validateForm()">
                 Continue to checkout
-              </button>
+              </a role="button">
             </form>
           </div>
           <!--/.Card-->
@@ -266,27 +263,33 @@ checkout
   </main>
   <!--Main layout-->
 </div>
-{% endblock content %} {% block extra_body %}
-<!-- Initializations -->
+{% endblock content %}
+{% block extra_body %}
 <script type="text/javascript">
   // Animations initialization
   new WOW().init();
 </script>
-{% endblock extra_body %} {% block extra_scripts %}
+{% endblock extra_body %}
+{% block extra_scripts %}
 <script>
-  var hideable_shipping_form = $(".hideable-shipping-form");
-  var hideable_billing_form = $(".hideable-billing-form");
+function displayErrorToast(message) {
+  iziToast.error({
+    title: "Error",
+    message: message,
+  });
+}
 
+var hideable_shipping_form = $(".hideable-shipping-form");
+var hideable_billing_form = $(".hideable-billing-form");
+
+var same_billing_address = document.querySelector(
+  "input[name=same_billing_address]"
+);
+
+if ("{{default_shipping_address}}") {
   var use_default_shipping = document.querySelector(
     "input[name=use_default_shipping]"
   );
-  var use_default_billing = document.querySelector(
-    "input[name=use_default_billing]"
-  );
-  var same_billing_address = document.querySelector(
-    "input[name=same_billing_address]"
-  );
-
   use_default_shipping.addEventListener("change", function () {
     if (this.checked) {
       hideable_shipping_form.hide();
@@ -294,25 +297,125 @@ checkout
       hideable_shipping_form.show();
     }
   });
-
+}
+if ("{{default_billing_address}}") {
+  var use_default_billing = document.querySelector(
+    "input[name=use_default_billing]"
+  );
   use_default_billing.addEventListener("change", function () {
     if (this.checked) {
       hideable_billing_form.hide();
-      same_billing_address.setAttribute('disabled', true);
+      same_billing_address.setAttribute("disabled", true);
     } else {
       hideable_billing_form.show();
-      same_billing_address.removeAttribute('disabled');
+      same_billing_address.removeAttribute("disabled");
     }
   });
+}
 
-  same_billing_address.addEventListener("change", function () {
-    if (this.checked) {
-      hideable_billing_form.hide();
-      use_default_billing.setAttribute('disabled', true);
+same_billing_address.addEventListener("change", function () {
+  if (this.checked) {
+    hideable_billing_form.hide();
+    use_default_billing.setAttribute("disabled", true);
+  } else {
+    hideable_billing_form.show();
+    use_default_billing.removeAttribute("disabled");
+  }
+});
+
+const validateBilling = () => {
+  console.log("validateShipping");
+  const billingAddress = document
+    .getElementById("id_billing_address")
+    .value.trim();
+  if (billingAddress.length <= 0) {
+    displayErrorToast("Billing address cannot be empty!");
+     document
+    .getElementById("id_billing_address").focus();
+    return false;
+  }
+  const billingCountry = document.getElementById("id_billing_country").value;
+  if (billingCountry.length <= 0) {
+    displayErrorToast("Billing country is not selected!");
+    document.getElementById("id_billing_country").focus();
+    return false;
+  }
+  const zip = document.getElementById("id_billing_zip").value;
+  if (!(/^[0-9]*$/.test(zip)) || zip.length != 6) {
+    displayErrorToast("Zip should contain exactly 6 numeric characters");
+    document.getElementById("id_billing_zip").focus();
+    return false;
+  }
+  return true;
+};
+
+const validateShipping = () => {
+  console.log("validateShipping");
+  const shippingAddress = document
+    .getElementById("id_shipping_address")
+    .value.trim();
+  if (shippingAddress.length <= 0) {
+    displayErrorToast("Shipping address cannot be empty!");
+    document
+    .getElementById("id_shipping_address").focus();
+    return false;
+  }
+  const shippingCountry = document.getElementById("id_shipping_country").value;
+  if (shippingCountry.length <= 0) {
+    displayErrorToast("Shipping country is not selected!");
+    document.getElementById("id_shipping_country").focus();
+    return false;
+  }
+  const zip = document.getElementById("id_shipping_zip").value;
+  if (!(/^[0-9]*$/.test(zip)) || zip.length != 6) {
+    displayErrorToast("Zip should contain exactly 6 numeric characters");
+    document.getElementById("id_shipping_zip").focus();
+    return false;
+  }
+  return true;
+};
+
+const validate = () => {
+  let shipping = false;
+  let billing = false;
+
+  if ("{{default_shipping_address}}") {
+    const useDefaultShipping = document.getElementById(
+      "id_use_default_shipping"
+    );
+    if (useDefaultShipping.checked) {
+      shipping = true;
     } else {
-      hideable_billing_form.show();
-      use_default_billing.removeAttribute('disabled');
+      shipping = validateShipping();
     }
-  });
+  } else {
+    shipping = validateShipping();
+  }
+
+  const sameBillingAddress = document.getElementById("id_same_billing_address");
+
+  if (sameBillingAddress.checked) {
+    billing = shipping;
+    return (billing && shipping);
+  }
+
+  if ("{{default_billing_address}}") {
+    const useDefaultBilling = document.getElementById("id_use_default_billing");
+    if (useDefaultBilling.checked) {
+      billing = true;
+    } else {
+      billing = validateBilling();
+    }
+  } else {
+    billing = validateBilling();
+  }
+  return (billing && shipping);
+};
+
+function validateForm() {
+  if (validate()) {
+    document.querySelector("#checkout-form").submit();
+  }
+}
 </script>
 {% endblock extra_scripts %}

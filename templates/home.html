@@ -20,7 +20,6 @@
     <!--Carousel Wrapper-->
     {% include 'carousel.html' %}
     <!--/.Carousel Wrapper-->
-    {% include 'messages.html' %}
     <!--Main layout-->
     <main>
       <div class="container">
@@ -90,13 +89,6 @@
             <div class="col-lg-3 col-md-6 mb-4">
               <!--Card-->
               <div class="card">
-                <!--Card image-->
-                {% comment %}
-                  <img
-                    src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/13.jpg"
-                    class="card-img-top"
-                    alt=""
-                  /> {% endcomment %}
                   <div class="view overlay">
                   <img
                     src="{{item.image.url}}"
@@ -179,10 +171,11 @@
     </main>
     <!--Main layout-->
 
+    {% include 'bottom-scripts.html' %}
     <!--Footer-->
     {% include 'footer.html' %}
     <!--/.Footer-->
-    {% include 'bottom-scripts.html' %}
+    {% include 'messages.html' %}
     <!-- Initializations -->
     <script type="text/javascript">
       // Animations initialization

@@ -17,9 +17,10 @@
     {% endblock content %}
     {% block body %}{%endblock body%}
     {% include 'bottom-scripts.html' %}
-    {% include 'footer.html' %}
     {%block extra_body%} {% endblock extra_body %}
     {% block extra_scripts %}
     {% endblock extra_scripts %}
+    {% include 'messages.html' %}
+    {% include 'footer.html' %}
   </body>
 </html>
