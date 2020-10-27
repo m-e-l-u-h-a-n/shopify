@@ -77,20 +77,6 @@
           <h1>{% trans "Sign In" %}</h1>
           <hr/>
         </div>
-        <div class="col-10 col-md-4">
-          <div class="card">
-            <div class="row align-items-center justify-content-center">
-              <h3 class="text-muted mt-2 pt-2">{% trans "Other signin methods" %}</h3>
-            </div>
-            <hr/>
-            <div class="card-body">
-              <div class="row align-items-center justify-content-center mt-n2">
-                <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn btn-facebook" role="button" style="background-color: blue; color: white;"><i class="fab fa-facebook-f fa-lg mr-2" style="color: white"></i>Facebook</a>
-                <a href="{% provider_login_url "google" %}" class="btn btn-google-g" role="button" style="background-color: #ad0909c5; color: white;"><i class="fab fa-google-plus-g fa-lg mr-2" style="color: white"></i>Google</a>
-              </div>
-            </div>
-          </div>
-        </div>
         <div class="col-10 col-md-6">
           <div class="card my-4">
             <div class="card-body">
@@ -155,6 +141,20 @@
                   {% trans "Sign In" %}
                 </button>
               </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-10 col-md-4">
+          <div class="card">
+            <div class="row align-items-center justify-content-center">
+              <h3 class="text-muted mt-2 pt-2">{% trans "Other Signin methods" %}</h3>
+            </div>
+            <hr/>
+            <div class="card-body">
+              <div class="row align-items-center justify-content-center mt-n2">
+                <a href="{% provider_login_url "facebook" method="oauth2" %}" class="btn btn-facebook" role="button" style="background-color: blue; color: white;"><i class="fab fa-facebook-f fa-lg mr-2" style="color: white"></i>Facebook</a>
+                <a href="{% provider_login_url "google" %}" class="btn btn-google-g" role="button" style="background-color: #ad0909c5; color: white;"><i class="fab fa-google-plus-g fa-lg mr-2" style="color: white"></i>Google</a>
+              </div>
             </div>
           </div>
         </div>

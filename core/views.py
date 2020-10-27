@@ -35,10 +35,16 @@ class HomeView(ListView):
     template_name = "home.html"
 
 
-class ItemDetailView(DetailView):
-    """A view to deal with the display details of a particular item in the cart."""
-    model = Item
-    template_name = 'product.html'
+def item_detail_view(request, slug):
+
+    if request.method == 'GET':
+        item = Item.objects.get(slug=slug)
+        same_category_items = Item.objects.filter(category=item.category)
+        context = {
+            "item": item,
+            "same_category_items": same_category_items
+        }
+        return render(request, 'product.html', context=context)
 
 
 class OrderSummaryView(LoginRequiredMixin, View):
@@ -367,7 +373,7 @@ def remove_from_cart(req, slug):
             return redirect("order-summary")
         else:
             # add a message the no such item exists in the order.
-            messages.info(req, "This item is not is the cart.")
+            messages.info(req, "This item is not in your cart.")
             return redirect("product", slug=slug)
     else:
         # add a message saying user does not have a order.

@@ -46,6 +46,9 @@ class Item(models.Model):
     def get_remove_from_cart_url(self):
         return reverse("remove-from-cart", kwargs={"slug": self.slug})
 
+    def get_saved_amount(self):
+        return self.price - self.discount_price
+
 
 class OrderItem(models.Model):
     """Just to creates a link between an order going on and actual items on the website."""
