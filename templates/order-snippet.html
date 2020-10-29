@@ -39,7 +39,19 @@
 <form class="card p-2" action="{% url 'add-coupon' %}" method="POST">
   {% csrf_token %}
   <div class="input-group">
-    {{ coupon_form.code }}
+    <select
+      name="code"
+      class="custom-select"
+      placeholder="Promo Code"
+      aria-label="Recipient&#39;s username"
+      aria-describedby="basic-addon2"
+      required
+      id="id_code"
+    >
+      <option value="">SELECT</option>
+      <option value="FIRST_TIME">FIRST_TIME</option>
+      <option value="THREE_THOUSAND">THREE_THOUSAND</option>
+    </select>
     <div class="input-group-append">
       <button class="btn btn-secondary btn-md waves-effect m-0" type="submit">
         Redeem

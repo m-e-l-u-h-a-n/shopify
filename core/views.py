@@ -28,6 +28,14 @@ def valid_form(values):
     return valid
 
 
+def check_first_time(request):
+    order_qs = Order.objects.filter(user=request.user, is_ordered=True)
+
+    if len(order_qs):
+        return False
+    return True
+
+
 class HomeView(ListView):
     """Home view is  used for listing of all the Items present for selling in the website."""
     model = Item
@@ -77,10 +85,10 @@ class CheckoutView(View):
                 self.request, "You need to login to access the page.")
             return redirect('account_login')
         context = {
-            "form": form,
+            'form': form,
             'order': order,
-            "coupon_form": CouponForm(),
-            'show_coupon_form': True
+            'coupon_form': CouponForm(),
+            'show_coupon_form': True,
         }
         shipping_address_qs = Address.objects.filter(
             user=self.request.user,
@@ -105,7 +113,6 @@ class CheckoutView(View):
         form = CheckoutForm(self.request.POST or None)
         try:
             order = Order.objects.get(user=self.request.user, is_ordered=False)
-            # TODO: this form needs proper validations about empty addressesand all.
             if form.is_valid():
                 use_default_shipping = form.cleaned_data.get(
                     'use_default_shipping')
@@ -430,27 +437,71 @@ def get_coupon(request, code):
 
 class AddCouponView(LoginRequiredMixin, View):
     def post(self, *args, **kwargs):
-        form = CouponForm(request.POST)
-        print("validated the form, line = 301")
+        form = CouponForm(self.request.POST)
         if form.is_valid():
-            try:
-                order = Order.objects.get(
-                    user=self.request.user, is_ordered=False)
-                code = form.cleaned_data.get('code')
-                order.coupon = get_coupon(self.request, code)
-                order.save()
-                # TODO:: Add validations and limit number of time usage of the coupon.
-                messages.success(self.request, "Coupon applied succesfully.")
-                return redirect('checkout')
-            except ObjectDoesNotExist:
-                messages.info(
-                    self.request, "You do not have any active order.")
-                return redirect('checkout')
-            messages.info(self.request, "You do not have any active order.")
-            return redirect('checkout')
-        else:
-            messages.warning(self.request, "Invalid Coupon Code!")
-            return redirect('checkout')
+            code = form.cleaned_data.get('code')
+            if code == 'FIRST_TIME':
+                if check_first_time(self.request):
+                    try:
+                        order = Order.objects.get(
+                            user=self.request.user, is_ordered=False)
+                        order.coupon = get_coupon(self.request, code)
+                        order.save()
+                        messages.success(
+                            self.request, "Coupon applied succesfully.")
+                        return redirect('checkout')
+                    except ObjectDoesNotExist:
+                        messages.info(
+                            self.request, "You do not have any active order.")
+                        return redirect('checkout')
+                else:
+                    messages.warning(
+                        self.request, "It's not your first order.")
+                    return redirect('checkout')
+            elif code == 'THREE_THOUSAND':
+                try:
+                    order = Order.objects.get(
+                        user=self.request.user, is_ordered=False)
+                    if order.coupon:
+                        messages.info(self.request,
+                                      "A coupon is already active for this order!")
+                        return redirect('checkout')
+                    if order.get_total() > 3000:
+                        order.coupon = get_coupon(self.request, code)
+                        order.save()
+                        messages.success(
+                            self.request, "Coupon applied successfully!")
+                        return redirect('checkout')
+                    else:
+                        messages.info(self.request,
+                                      "Order total should be greater than 3000 to claim it!")
+                        return redirect('checkout')
+
+                except ObjectDoesNotExist:
+                    messages.info(
+                        self.request, "You do not have any active order.")
+                    return redirect('checkout')
+            else:
+                messages.warning(
+                    self.request, "Invalid coupon code requested!")
+                return redirect("checkout")
+        #     try:
+        #         order = Order.objects.get(
+        #             user=self.request.user, is_ordered=False)
+        #         code = form.cleaned_data.get('code')
+        #         order.coupon = get_coupon(self.request, code)
+        #         order.save()
+        #         messages.success(self.request, 'Coupon applied succesfully.')
+        #         return redirect('checkout')
+        #     except ObjectDoesNotExist:
+        #         messages.info(
+        #             self.request, "You do not have any active order.")
+        #         return redirect('checkout')
+        #     messages.info(self.request, "You do not have any active order.")
+        #     return redirect('checkout')
+        # else:
+        #     messages.warning(self.request, "Invalid Coupon Code!")
+        #     return redirect('checkout')
 
 
 class RequestRefundView(View):
