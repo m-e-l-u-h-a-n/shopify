@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     # crispy installed app
     'crispy_forms',
     # django-countries package installed app
-    'django_countries'
+    'django_countries',
 ]
 
 MIDDLEWARE = [
@@ -98,6 +98,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 # auth (all auth package addition)
 SITE_ID = 1
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_USERNAME_REQUIRED = True
 
 # CRISPY_FORMS SETTINGS
 
@@ -108,3 +111,18 @@ LOGIN_REDIRECT_URL = '/'
 
 # stripe secret key
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', cast=str)
+
+# Email verification configurations
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+SENDGRID_ECHO_TO_STDOUT = True
+
+SENDGRID_API_KEY = config('SENDGRID_API_KEY', cast=str)
+
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'  # this is exactly the value 'apikey'
+EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
+EMAIL_PORT = 465
+EMAIL_USE_TLS = True

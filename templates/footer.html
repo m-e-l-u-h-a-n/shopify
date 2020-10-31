@@ -1,50 +1,49 @@
-<footer
-  class="page-footer text-center font-small mt-4 wow fadeIn"
-  id="footer"
->
-  <hr class="my-4" />
+<footer class="page-footer text-center font-small mt-4 wow fadeIn">
+  <div id="footer">
+    <hr class="my-4" />
 
-  <!-- Social icons -->
-  <div class="pb-4">
-    <a href="">
-      <i class="fab fa-facebook-f mr-3"></i>
-    </a>
+    <!-- Social icons -->
+    <div class="pb-4">
+      <a href="">
+        <i class="fab fa-facebook-f mr-3"></i>
+      </a>
 
-    <a href="">
-      <i class="fab fa-twitter mr-3"></i>
-    </a>
+      <a href="">
+        <i class="fab fa-twitter mr-3"></i>
+      </a>
 
-    <a href="">
-      <i class="fab fa-youtube mr-3"></i>
-    </a>
+      <a href="">
+        <i class="fab fa-youtube mr-3"></i>
+      </a>
 
-    <a href="">
-      <i class="fab fa-google-plus-g mr-3"></i>
-    </a>
+      <a href="">
+        <i class="fab fa-google-plus-g mr-3"></i>
+      </a>
 
-    <a href="">
-      <i class="fab fa-dribbble mr-3"></i>
-    </a>
+      <a href="">
+        <i class="fab fa-dribbble mr-3"></i>
+      </a>
 
-    <a href="">
-      <i class="fab fa-pinterest mr-3"></i>
-    </a>
+      <a href="">
+        <i class="fab fa-pinterest mr-3"></i>
+      </a>
 
-    <a href="">
-      <i class="fab fa-github mr-3"></i>
-    </a>
+      <a href="">
+        <i class="fab fa-github mr-3"></i>
+      </a>
+    </div>
+    <!-- Social icons -->
+
+    <!--Copyright-->
+    <div class="footer-copyright py-3">
+      Copyright &copy;
+      <script type="text/javascript">
+        document.write(new Date().getFullYear());
+      </script>
+      <a href="{% url 'home' %}"> Shopify </a>
+    </div>
+    <!--/.Copyright-->
   </div>
-  <!-- Social icons -->
-
-  <!--Copyright-->
-  <div class="footer-copyright py-3">
-    Copyright &copy;
-    <script type="text/javascript">
-      document.write(new Date().getFullYear());
-    </script>
-    <a href="{% url 'home' %}"> Shopify </a>
-  </div>
-  <!--/.Copyright-->
 </footer>
 <script>
   $(document).ready(function () {
@@ -52,7 +51,7 @@
       var docHeight = $(window).height();
       var footerHeight = $("#footer").height();
       var footerTop = $("#footer").position().top + footerHeight;
-      var marginTop = docHeight - footerTop + 10;
+      var marginTop = docHeight - footerTop;
       if (footerTop < docHeight)
         $("#footer").css("margin-top", marginTop + "px");
       else $("#footer").css("margin-top", "0px");
