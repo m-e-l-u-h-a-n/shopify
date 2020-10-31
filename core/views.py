@@ -282,7 +282,7 @@ class PaymentView(LoginRequiredMixin, View):
             order.payment = payment
             order.save()
             messages.success(self.request, "Order successfully placed!")
-            return redirect('checkout')
+            return redirect('home')
         except stripe.error.CardError as e:
             # Since it's a decline, stripe.error.CardError will be caught
             print(e)
@@ -485,23 +485,6 @@ class AddCouponView(LoginRequiredMixin, View):
                 messages.warning(
                     self.request, "Invalid coupon code requested!")
                 return redirect("checkout")
-        #     try:
-        #         order = Order.objects.get(
-        #             user=self.request.user, is_ordered=False)
-        #         code = form.cleaned_data.get('code')
-        #         order.coupon = get_coupon(self.request, code)
-        #         order.save()
-        #         messages.success(self.request, 'Coupon applied succesfully.')
-        #         return redirect('checkout')
-        #     except ObjectDoesNotExist:
-        #         messages.info(
-        #             self.request, "You do not have any active order.")
-        #         return redirect('checkout')
-        #     messages.info(self.request, "You do not have any active order.")
-        #     return redirect('checkout')
-        # else:
-        #     messages.warning(self.request, "Invalid Coupon Code!")
-        #     return redirect('checkout')
 
 
 class RequestRefundView(View):

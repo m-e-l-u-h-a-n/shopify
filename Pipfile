@@ -44,6 +44,7 @@ stripe = "*"
 pillow = "*"
 django-sendgrid-v5 = "*"
 django-sendgrid = "*"
+mysqlclient = "*"
 
 [requires]
 python_version = "3.6"
