@@ -38,9 +38,14 @@ def check_first_time(request):
 
 class HomeView(ListView):
     """Home view is  used for listing of all the Items present for selling in the website."""
-    model = Item
     paginate_by = 10
     template_name = "home.html"
+
+    def get_queryset(self):
+        title = self.request.GET.get('title', '')
+        queryset = Item.objects.filter(
+            title__icontains=title).order_by('title')
+        return queryset
 
 
 def item_detail_view(request, slug):
