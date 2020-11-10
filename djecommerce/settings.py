@@ -112,17 +112,9 @@ LOGIN_REDIRECT_URL = '/'
 # stripe secret key
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', cast=str)
 
-# Email verification configurations
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-SENDGRID_SANDBOX_MODE_IN_DEBUG = False
-SENDGRID_ECHO_TO_STDOUT = True
-
-SENDGRID_API_KEY = config('SENDGRID_API_KEY', cast=str)
-
-# EMAIL_HOST = 'smtp.sendgrid.net'
-# EMAIL_HOST_USER = 'apikey'  # this is exactly the value 'apikey'
-# EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
-# EMAIL_PORT = 465
-# EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = config('EMAIL_USERNAME', cast=str)
+EMAIL_HOST_PASSWORD = config('EMAIL_PASSWORD', cast=str)
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
