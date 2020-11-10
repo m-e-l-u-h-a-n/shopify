@@ -1,12 +1,20 @@
 {% extends "account/base.html" %}
-
+{% load static %}
 {% load i18n %}
 
 {% block head_title %}{% trans "Verify Your E-mail Address" %}{% endblock %}
-
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/utils.css' %}">
+{% endblock extra_head %}
 {% block content %}
-    <h1>{% trans "Verify Your E-mail Address" %}</h1>
+    <div class="container">
+        <div class="row justify-content-center align-self-center">
+            <div class="notify-box">
+                <h1>{% trans "Verify Your E-mail Address" %}</h1>
+                <p>{% blocktrans %}We have sent an e-mail to you for verification. Follow the link provided to finalize the signup process. Please contact us if you do not receive it within a few minutes.{% endblocktrans %}</p>
+            </div>
+        </div>
+    </div>
 
-    <p>{% blocktrans %}We have sent an e-mail to you for verification. Follow the link provided to finalize the signup process. Please contact us if you do not receive it within a few minutes.{% endblocktrans %}</p>
 
 {% endblock %}

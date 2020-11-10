@@ -1,0 +1,15 @@
+.notify-box {
+  margin-top: 9rem;
+  /* height: 225px; */
+  /* width: 100%; */
+  border: 1px dashed #512dab;
+  border-radius: 20px;
+  padding: 20px 70px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 25px;
+  background-color: #f9fcff;
+}
