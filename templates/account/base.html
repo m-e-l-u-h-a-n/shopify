@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Shopify | {% block head_title %}{% endblock %}</title>
+    {% block extra_head %} {% endblock extra_head %} {% include 'head-css.html' %}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    {% include 'head-css.html' %}
+  </head>
+  <body>
+    {% block body_initial %}
+    {% endblock body_initial %}
+    {% block content %}
+    {% endblock content %}
+    {% block body %}{%endblock body%}
+    {% include 'bottom-scripts.html' %}
+    {%block extra_body%} {% endblock extra_body %}
+    {% block extra_scripts %}
+    {% endblock extra_scripts %}
+    {% include 'messages.html' %}
+    {% include 'footer.html' %}
+  </body>
+</html>
