@@ -439,7 +439,7 @@ def remove_single_from_cart(req, slug):
 def get_coupon(request, code):
     print('code = ', code)
     try:
-        coupon = Coupon.objects.get(code=code)
+        coupon = get_object_or_404(Coupon, code=code)
         return coupon
     except ObjectDoesNotExist:
         messages.warning(request, "Invalid Coupon code!")
