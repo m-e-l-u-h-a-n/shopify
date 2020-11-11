@@ -46,10 +46,10 @@ class HomeView(ListView):
     def get_queryset(self):
         query_term = self.request.GET.get('title', '')
         if not query_term:
-            return Item.objects.all()
+            return Item.objects.order_by('title').all()
         vector = SearchVector('title', 'description')
         query = SearchQuery(query_term)
-        queryset = Item.objects.annotate(
+        queryset = Item.objects.order_by('title').annotate(
             search=vector).filter(search=query)
         return queryset
 
