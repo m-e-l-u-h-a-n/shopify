@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import CheckoutForm, CouponForm, RefundForm
 from django.conf import settings
+from django.contrib.postgres.search import SearchQuery, SearchVector
+
 # Create your views here.
 import random
 import string
@@ -42,9 +44,13 @@ class HomeView(ListView):
     template_name = "home.html"
 
     def get_queryset(self):
-        title = self.request.GET.get('title', '')
-        queryset = Item.objects.filter(
-            title__icontains=title).order_by('title')
+        query_term = self.request.GET.get('title', '')
+        if not query_term:
+            return Item.objects.all()
+        vector = SearchVector('title', 'description')
+        query = SearchQuery(query_term)
+        queryset = Item.objects.annotate(
+            search=vector).filter(search=query)
         return queryset
 
 
@@ -233,7 +239,7 @@ class CheckoutView(View):
                 else:
                     messages.warning(
                         self.request, "Failed checkout(invalid payment option)!")
-                    return redirect(checkout)
+                    return redirect('checkout')
                 messages.success("Successfully placed the order.")
                 return redirect('checkout')
             else:
