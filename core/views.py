@@ -45,12 +45,22 @@ class HomeView(ListView):
 
     def get_queryset(self):
         query_term = self.request.GET.get('title', '')
-        if not query_term:
-            return Item.objects.order_by('title').all()
-        vector = SearchVector('title', 'description')
-        query = SearchQuery(query_term)
-        queryset = Item.objects.order_by('title').annotate(
-            search=vector).filter(search=query)
+        category = self.request.GET.get('category', '')
+        if not category:
+            if not query_term:
+                queryset = Item.objects.order_by('title').all()
+            else:
+                vector = SearchVector('title', 'description')
+                query = SearchQuery(query_term)
+                queryset = Item.objects.order_by('title').annotate(
+                    search=vector).filter(search=query)
+        else:
+            if not query_term:
+                queryset = Item.objects.filter(
+                    category=category).order_by('title')
+            else:
+                query_term = Item.objects.filter(category=category).order_by('title').annotate(
+                    search=vector).filter(search=query)
         return queryset
 
 
@@ -496,23 +506,6 @@ class AddCouponView(LoginRequiredMixin, View):
                 messages.warning(
                     self.request, "Invalid coupon code requested!")
                 return redirect("checkout")
-        #     try:
-        #         order = Order.objects.get(
-        #             user=self.request.user, is_ordered=False)
-        #         code = form.cleaned_data.get('code')
-        #         order.coupon = get_coupon(self.request, code)
-        #         order.save()
-        #         messages.success(self.request, 'Coupon applied succesfully.')
-        #         return redirect('checkout')
-        #     except ObjectDoesNotExist:
-        #         messages.info(
-        #             self.request, "You do not have any active order.")
-        #         return redirect('checkout')
-        #     messages.info(self.request, "You do not have any active order.")
-        #     return redirect('checkout')
-        # else:
-        #     messages.warning(self.request, "Invalid Coupon Code!")
-        #     return redirect('checkout')
 
 
 class RequestRefundView(View):

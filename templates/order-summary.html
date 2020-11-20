@@ -37,8 +37,8 @@ Order Summary
                   </td>
                   <td>
                   {% if order_item.item.discount_price %}
-                  ${{order_item.get_total_discount_price}}
-                  <span class="badge badge-primary">Saving ${{order_item.get_saved_amount}}</span>
+                  Rs.{{order_item.get_total_discount_price}}
+                  <span class="badge badge-primary">Saving Rs.{{order_item.get_saved_amount}}</span>
                   {% else %}
                   {{order_item.get_total_price}}
                   {% endif %}
@@ -65,7 +65,7 @@ Order Summary
                 <b>Order Total</b>
                 </td>
                 <td>
-                <b>${{order.get_total}}</b>
+                <b>Rs.{{order.get_total}}</b>
                 </td>
               </tr>
               <tr>
