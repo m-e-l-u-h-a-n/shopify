@@ -1,11 +1,24 @@
 {% extends "account/base.html" %}
 
 {% load i18n %}
+{% load static %}
 
 {% block head_title %}{% trans "Account Inactive" %}{% endblock %}
 
-{% block content %}
-<h1>{% trans "Account Inactive" %}</h1>
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/utils.css' %}" />
+{% endblock extra_head %}
 
-<p>{% trans "This account is inactive." %}</p>
+{% block content %}
+{% include 'navbar.html' %}
+<main style="margin-top: 100px">
+  <div class="container">
+    <div class="row justify-content-center align-self-center">
+      <div class="notify-box">
+        <h1>{% trans "Account Inactive" %}</h1>
+        <p>{% trans "This account is inactive." %}</p>
+      </div>
+    </div>
+  </div>
+</main>
 {% endblock %}
