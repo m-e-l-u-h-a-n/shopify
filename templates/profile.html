@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block head_title %}
+Profile {{ request.user.username }}
+{% endblock head_title %}
+{% block content %}
+<main>
+  <div class="container">
+    <div class="col-12">{% include 'navbar.html' %}</div>
+    <div class="row mt-5">
+      <div class="col-12 mt-5">
+        <div class="table-responsive text-nowrap">
+          <h2>Your orders</h2>
+          <hr class="my-2 stylish-color" />
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Ref code</th>
+                <th scope="col">Details</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in object_list %}
+                <tr>
+                  <th scope="row">{{forloop.counter}}.</th>
+                  <td>{{order.ref_code}}</td>
+                  <td colspan="3">
+                    <div class="row">
+                      <p>
+                        <strong>Ordered date: </strong>{{order.ordered_date}}
+                      </p>
+                    </div>
+                    <div class="row">
+                      <p>
+                        <strong>Billing Address: </strong>{{order.billing_address}}
+                      </p>
+                    </div>
+                    <div class="row">
+                      <p>
+                        <strong>Shipping Address: </strong>{{order.shipping_address}}
+                      </p>
+                    </div>
+                    <div class="row">
+                      <p>
+                        <strong>Coupon: </strong>
+                        {% if order.coupon %}
+                        {{order.coupon}}
+                      </p>
+                        {% else %}
+                        No active coupons.
+                      </p>
+                        {% endif %}
+                    </div>
+                    <div class="row">
+                      <p>
+                        <strong>Recieved: </strong>
+                      {% if order.recieved %}
+                      <strong>Yes</strong>
+                      {% else %}
+                      <strong>No</strong>
+                      {% endif %}</p>
+                    </div>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center">
+                  <strong>Your haven't placed any order.</strong>
+                  </td>
+                </tr>
+                <tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock content %}

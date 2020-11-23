@@ -240,18 +240,7 @@ class CheckoutView(View):
                     if set_default_billing:
                         billing_address.default = True
                         billing_address.save()
-
-                payment_options = form.cleaned_data.get('payment_options')
-                if payment_options == 'S':
-                    return redirect('payment', payment_options="stripe")
-                elif payment_options == 'P':
-                    return redirect('payment', payment_options="paypal")
-                else:
-                    messages.warning(
-                        self.request, "Failed checkout(invalid payment option)!")
-                    return redirect('checkout')
-                messages.success("Successfully placed the order.")
-                return redirect('checkout')
+                return redirect('payment', payment_options="paypal")
             else:
                 print(form.errors)
                 messages.warning(self.request, "Failed Checkout")
@@ -303,7 +292,7 @@ class PaymentView(LoginRequiredMixin, View):
             order.payment = payment
             order.save()
             messages.success(self.request, "Order successfully placed!")
-            return redirect('checkout')
+            return redirect('home')
         except stripe.error.CardError as e:
             # Since it's a decline, stripe.error.CardError will be caught
             print(e)
@@ -539,3 +528,10 @@ class RequestRefundView(View):
             except ObjectDoesNotExist:
                 messages.info(self.request, "This order does not exists.")
                 return redirect('request-refund')
+
+
+class ProfileView(ListView):
+    template_name = 'profile.html'
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user, is_ordered=True)
