@@ -2,11 +2,6 @@ from django import forms
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
 
-PAYMENT_CHOICES = (
-    ('S', 'Stripe'),
-    ('P', 'PayPal')
-)
-
 
 class CheckoutForm(forms.Form):
     # Handled requirement in the view
@@ -33,9 +28,6 @@ class CheckoutForm(forms.Form):
     use_default_shipping = forms.BooleanField(required=False)
     set_default_billing = forms.BooleanField(required=False)
     use_default_billing = forms.BooleanField(required=False)
-
-    payment_options = forms.ChoiceField(
-        widget=forms.RadioSelect, choices=PAYMENT_CHOICES)
 
 
 class CouponForm(forms.Form):

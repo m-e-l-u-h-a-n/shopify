@@ -214,38 +214,6 @@ checkout
               </div>
               {% endif %}
               <hr />
-
-              <div class="d-block my-3">
-                <label for="id_payment_options_0" class="requiredField">
-                  <h4>Payment options<span class="asteriskField">*</span></h4>
-                </label>
-                <div class="custom-control custom-radio">
-                  <input
-                    id="id_payment_options_1"
-                    name="payment_options"
-                    type="radio"
-                    class="custom-control-input"
-                    checked
-                    value="S"
-                  />
-                  <label class="custom-control-label" for="id_payment_options_1"
-                    >Stripe</label
-                  >
-                </div>
-                <div class="custom-control custom-radio">
-                  <input
-                    id="id_payment_options_2"
-                    name="payment_options"
-                    type="radio"
-                    class="custom-control-input"
-                    value="P"
-                  />
-                  <label class="custom-control-label" for="id_payment_options_2"
-                    >Paypal</label
-                  >
-                </div>
-              </div>
-              <hr class="mb-4" />
               <a role="button" class="btn btn-primary btn-lg btn-block" onclick="validateForm()">
                 Continue to checkout
               </a>
