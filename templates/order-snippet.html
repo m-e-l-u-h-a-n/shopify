@@ -10,12 +10,12 @@
     <div>
       <h6 class="my-0">{{order_item.quantity}} x {{order_item.item.title}}</h6>
     </div>
-    <span class="text-muted">${{order_item.get_final_price}}</span>
+    <span class="text-muted">Rs.{{order_item.get_final_price}}</span>
   </li>
   {% endfor %}
   <li class="list-group-item d-flex justify-content-between">
     <span>Total (USD)</span>
-    <strong>${{order.get_total}}</strong>
+    <strong>Rs.{{order.get_total}}</strong>
   </li>
   {% if order.coupon %}
   <li class="list-group-item d-flex justify-content-between bg-light">
@@ -23,12 +23,12 @@
       <h6 class="my-0">Promo code</h6>
       <small>{{order.coupon.code}}</small>
     </div>
-    <span class="text-success">-${{order.get_coupon_discount}}</span>
+    <span class="text-success">-Rs.{{order.get_coupon_discount}}</span>
   </li>
   <li class="list-group-item d-flex justify-content-between">
     <span>Discounted Total (USD)</span>
     <strong
-      ><del>${{order.get_total}}</del> ${{order.get_total_after_coupon}}</strong
+      ><del>Rs.{{order.get_total}}</del> Rs.{{order.get_total_after_coupon}}</strong
     >
   </li>
   {% endif %}
